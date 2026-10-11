@@ -1,0 +1,56 @@
+source,target,mode,corridor_name,distance_km,travel_time_h,capacity,current_flow,cost_per_ton,emissions_factor,risk_score,damage_level
+hamburg,bremen,rail,Scandinavian-Mediterranean,120,1.6,620,420,18,0.35,0.16,0.00
+bremen,bremerhaven,rail,North Sea-Baltic,65,0.9,540,380,12,0.34,0.14,0.00
+hamburg,kiel,rail,Scandinavian-Mediterranean,95,1.2,390,210,13,0.33,0.12,0.00
+hamburg,luebeck,rail,Scandinavian-Mediterranean,65,0.8,430,250,10,0.33,0.12,0.00
+luebeck,rostock,road,Baltic Sea Corridor,125,1.8,360,220,20,0.78,0.18,0.00
+hamburg,hannover,rail,Scandinavian-Mediterranean,155,1.8,760,520,20,0.34,0.15,0.00
+hannover,berlin,rail,North Sea-Baltic,285,2.1,720,500,35,0.34,0.16,0.00
+berlin,magdeburg,rail,North Sea-Baltic,155,1.4,520,330,21,0.34,0.14,0.00
+magdeburg,leipzig_halle,rail,North Sea-Baltic,125,1.2,520,360,18,0.34,0.14,0.00
+leipzig_halle,dresden,rail,Orient/East-Med,115,1.1,470,310,17,0.34,0.15,0.00
+leipzig_halle,erfurt,rail,Scandinavian-Mediterranean,145,1.2,570,370,19,0.33,0.13,0.00
+erfurt,nuremberg,rail,Scandinavian-Mediterranean,235,1.7,620,430,30,0.33,0.14,0.00
+nuremberg,munich,rail,Scandinavian-Mediterranean,170,1.2,720,520,24,0.33,0.14,0.00
+nuremberg,regensburg,rail,Rhine-Danube,105,1.0,510,330,15,0.34,0.13,0.00
+regensburg,passau,inland_waterway,Rhine-Danube,125,5.2,390,260,8,0.20,0.20,0.00
+passau,linz,inland_waterway,Rhine-Danube,95,4.3,360,230,7,0.20,0.18,0.00
+linz,vienna,rail,Rhine-Danube,185,1.4,610,410,24,0.34,0.15,0.00
+munich,linz,rail,Rhine-Danube,240,2.0,520,360,32,0.34,0.18,0.00
+munich,zurich,rail,Rhine-Alpine,315,3.5,430,280,45,0.33,0.24,0.00
+munich,stuttgart,rail,Scandinavian-Mediterranean,230,2.1,610,450,32,0.34,0.16,0.00
+stuttgart,karlsruhe,rail,Rhine-Alpine,80,0.9,560,380,12,0.33,0.13,0.00
+karlsruhe,mannheim,rail,Rhine-Alpine,70,0.7,690,470,10,0.33,0.12,0.00
+mannheim,frankfurt,rail,Rhine-Alpine,85,0.8,770,540,13,0.33,0.13,0.00
+frankfurt,cologne,rail,Rhine-Alpine,190,1.2,840,610,27,0.33,0.17,0.00
+cologne,duesseldorf,rail,Rhine-Alpine,40,0.5,760,560,8,0.33,0.14,0.00
+duesseldorf,duisburg,rail,Rhine-Alpine,30,0.4,780,620,7,0.33,0.13,0.00
+duisburg,essen,rail,Rhine-Alpine,25,0.3,720,530,6,0.33,0.12,0.00
+essen,dortmund,rail,Rhine-Alpine,35,0.4,650,470,7,0.33,0.13,0.00
+dortmund,hannover,rail,North Sea-Baltic,215,1.8,620,410,28,0.34,0.16,0.00
+duisburg,rotterdam,inland_waterway,North Sea-Rhine-Mediterranean,225,9.5,920,760,13,0.18,0.25,0.00
+duisburg,antwerp,rail,North Sea-Rhine-Mediterranean,185,2.2,840,680,27,0.34,0.20,0.00
+rotterdam,amsterdam,rail,North Sea-Baltic,80,0.9,650,420,12,0.33,0.14,0.00
+rotterdam,antwerp,maritime,North Sea-Rhine-Mediterranean,105,5.0,980,710,7,0.12,0.22,0.00
+antwerp,brussels,rail,North Sea-Rhine-Mediterranean,45,0.5,680,430,8,0.34,0.12,0.00
+brussels,aachen,rail,North Sea-Rhine-Mediterranean,145,1.3,560,350,21,0.34,0.15,0.00
+aachen,cologne,rail,North Sea-Rhine-Mediterranean,75,0.8,620,430,11,0.34,0.14,0.00
+brussels,paris,rail,Atlantic,315,1.9,780,540,38,0.33,0.15,0.00
+paris,strasbourg,rail,Rhine-Alpine,490,2.2,720,480,58,0.33,0.16,0.00
+strasbourg,karlsruhe,rail,Rhine-Alpine,85,0.8,610,390,12,0.33,0.13,0.00
+strasbourg,basel,rail,Rhine-Alpine,145,1.3,590,390,20,0.33,0.15,0.00
+basel,mannheim,inland_waterway,Rhine-Alpine,270,12.0,620,460,16,0.18,0.28,0.00
+basel,zurich,rail,Rhine-Alpine,85,0.8,570,360,13,0.33,0.14,0.00
+frankfurt,luxembourg,rail,North Sea-Rhine-Mediterranean,240,2.5,470,300,34,0.34,0.18,0.00
+luxembourg,saarbruecken,rail,North Sea-Rhine-Mediterranean,100,1.2,390,240,15,0.34,0.15,0.00
+saarbruecken,mannheim,rail,North Sea-Rhine-Mediterranean,145,1.5,430,290,20,0.34,0.15,0.00
+dresden,prague,rail,Orient/East-Med,150,2.1,430,300,23,0.34,0.20,0.00
+prague,nuremberg,rail,Rhine-Danube,300,3.2,440,300,42,0.34,0.21,0.00
+prague,wroclaw,rail,Baltic-Adriatic,280,3.4,390,250,38,0.35,0.20,0.00
+wroclaw,poznan,rail,Baltic-Adriatic,175,2.2,430,280,25,0.35,0.16,0.00
+poznan,berlin,rail,North Sea-Baltic,270,2.8,480,330,36,0.35,0.17,0.00
+hamburg,copenhagen,rail,Scandinavian-Mediterranean,335,4.5,430,270,44,0.35,0.20,0.00
+copenhagen,rostock,maritime,Scandinavian-Mediterranean,175,6.0,460,260,11,0.13,0.22,0.00
+berlin,rostock,rail,Scandinavian-Mediterranean,235,2.2,430,250,30,0.34,0.17,0.00
+frankfurt,nuremberg,rail,Rhine-Danube,225,1.8,640,430,30,0.34,0.15,0.00
+duisburg,hannover,rail,North Sea-Baltic,245,2.1,580,400,31,0.34,0.17,0.00

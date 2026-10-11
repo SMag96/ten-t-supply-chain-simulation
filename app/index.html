@@ -1,0 +1,2020 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TEN-T Supply Chain Simulation</title>
+  <style>
+    :root {
+      --bg: #eef4f8;
+      --panel: #ffffff;
+      --drawer: #dbeefa;
+      --drawer-strong: #0a5f9e;
+      --drawer-dark: #004b82;
+      --rail: #064776;
+      --control: #ffffff;
+      --ink: #111827;
+      --muted: #4b5563;
+      --line: rgba(0, 75, 130, 0.18);
+      --blue: #0074d9;
+      --teal: #19535F;
+      --lime: #0074d9;
+      --red: #d64545;
+      --orange: #f59f00;
+      --violet: #8b5cf6;
+      --green: #0074d9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Verdana, Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 84px;
+      padding: 12px 24px 10px 14px;
+      border-bottom: 1px solid #d7dee6;
+      background: #fff;
+      position: relative;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #233876;
+      overflow-wrap: anywhere;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .eu-mark {
+      display: grid;
+      place-items: center;
+      width: 78px;
+      height: 44px;
+      border: 1px solid #cfd7df;
+      background: linear-gradient(90deg, #f8fafc 0 28%, #064da7 28% 72%, #f8fafc 72%);
+      color: #ffd400;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand-copy span {
+      color: #5f6368;
+      font-size: 15px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #334155;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 76px minmax(320px, 420px) minmax(0, 1fr);
+      height: calc(100vh - 84px);
+      min-height: 0;
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: var(--drawer);
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .side-rail {
+      display: grid;
+      align-content: start;
+      gap: 4px;
+      background: var(--rail);
+      padding-top: 4px;
+      border-right: 1px solid #083c62;
+    }
+
+    .rail-button {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 56px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 400;
+    }
+
+    .rail-button.active,
+    .rail-button:hover {
+      background: #0a5f9e;
+      color: #fff;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      min-height: 0;
+      padding: 0;
+      min-width: 0;
+      overflow: auto;
+    }
+
+    .group {
+      padding: 14px 18px;
+      margin-bottom: 0;
+      border-bottom: 1px solid rgba(0, 75, 130, 0.16);
+    }
+
+    .group:last-child {
+      border-bottom: 0;
+    }
+
+    h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #003f72;
+      letter-spacing: 0.05em;
+      margin: 0 0 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 640;
+      margin: 12px 0 6px;
+      color: #111827;
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 8px 10px;
+      min-height: 38px;
+      background: var(--control);
+      color: var(--ink);
+    }
+
+    select:focus, input[type="checkbox"]:focus-visible, input[type="range"]:focus-visible, button:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 2px;
+    }
+
+    input[type="range"] {
+      accent-color: var(--lime);
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--lime);
+    }
+
+    .checkbox-panel {
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.72);
+      margin: 10px 0 14px;
+      overflow: hidden;
+    }
+
+    .checkbox-panel summary {
+      cursor: pointer;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 720;
+      color: var(--ink);
+      list-style-position: inside;
+    }
+
+    .checkbox-panel summary span {
+      color: var(--drawer-dark);
+      font-weight: 760;
+    }
+
+    .checkbox-list {
+      display: grid;
+      gap: 4px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 0 10px 10px;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      align-items: start;
+      gap: 8px;
+      min-height: 30px;
+      padding: 6px;
+      border-radius: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .check-row:hover {
+      background: rgba(0, 116, 217, 0.08);
+      color: var(--ink);
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .range-row output {
+      min-width: 42px;
+      font-size: 13px;
+      text-align: right;
+      color: var(--muted);
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--control);
+      color: var(--ink);
+      border-radius: 2px;
+      padding: 8px 11px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--lime); color: var(--lime); }
+
+    .drawer-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      padding: 0 14px;
+      background: var(--drawer-strong);
+      color: #fff;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .drawer-close {
+      border: 0;
+      background: transparent;
+      color: #1f2937;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .drawer-section {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.58);
+      background: #bfe0f5;
+    }
+
+    .drawer-section[open] {
+      background: var(--drawer);
+    }
+
+    .drawer-section > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+      padding: 0 10px 0 28px;
+      cursor: pointer;
+      background: #0f68a8;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    .drawer-section > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .drawer-section > summary::after {
+      content: "v";
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .drawer-section:not([open]) > summary::after {
+      content: ">";
+    }
+
+    .drawer-content {
+      padding: 0;
+    }
+
+    .layer-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      align-items: center;
+      min-height: 42px;
+      margin: 0;
+      padding: 0 14px 0 30px;
+      border-bottom: 1px solid rgba(0, 75, 130, 0.11);
+      background: rgba(255, 255, 255, 0.22);
+      font-size: 15px;
+      font-weight: 700;
+      color: #050505;
+    }
+
+    .layer-row input {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+      accent-color: #3867d6;
+    }
+
+    .layer-row span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .layer-status {
+      min-height: 32px;
+      padding: 8px 12px 10px 30px;
+      background: #eff8fe;
+      color: #32536a;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .layer-status.error {
+      color: #991b1b;
+      background: #fff1f2;
+    }
+
+    .clear-map {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 0;
+      padding: 0 14px;
+      background: var(--drawer-dark);
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 10px;
+      background: #f8fafc;
+      border-bottom: 1px solid #d7dee6;
+    }
+
+    .metric {
+      background: #ffffff;
+      border: 1px solid #d7dee6;
+      border-radius: 2px;
+      padding: 9px 11px;
+      min-height: 62px;
+    }
+
+    .metric span {
+      display: block;
+      font-size: 12px;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.2;
+      color: #111827;
+    }
+
+    .metric em {
+      display: block;
+      margin-top: 4px;
+      font-style: normal;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .map-shell {
+      background: #b8dce9;
+      border: 0;
+      border-radius: 0;
+      overflow: hidden;
+      min-height: 0;
+      position: relative;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      background: #dcecf2;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+
+    svg.dragging {
+      cursor: grabbing;
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      display: grid;
+      gap: 6px;
+    }
+
+    .map-controls button {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.96);
+      color: #111827;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .map-controls button:last-child {
+      font-size: 14px;
+    }
+
+    .base-map {
+      opacity: 0.14;
+    }
+
+    .map-tile {
+      opacity: 1;
+      image-rendering: auto;
+    }
+
+    .official-overlay {
+      pointer-events: none;
+      opacity: 1;
+      image-rendering: auto;
+    }
+
+    .map-label {
+      font-size: 11px;
+      fill: #17212b;
+      paint-order: stroke;
+      stroke: rgba(255, 255, 255, 0.82);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+    }
+
+    .map-attribution {
+      font-size: 10px;
+      fill: #16222c;
+      paint-order: stroke;
+      stroke: rgba(255, 255, 255, 0.85);
+      stroke-width: 3px;
+    }
+
+    .edge-casing,
+    .edge {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .edge-casing {
+      pointer-events: none;
+      stroke: rgba(15, 48, 56, 0.88);
+      opacity: 0.95;
+    }
+
+    .edge {
+      cursor: pointer;
+      opacity: 0.96;
+    }
+
+    .edge.inactive {
+      stroke: var(--red);
+      stroke-dasharray: 6 5;
+      opacity: 0.96;
+    }
+
+    .node {
+      stroke: #fff;
+      stroke-width: 1.5;
+      cursor: pointer;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .flow-particle {
+      pointer-events: none;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 5px rgba(209, 214, 70, 0.72));
+    }
+
+    .node:hover, .edge:hover { filter: drop-shadow(0 0 5px rgba(209, 214, 70, .72)); }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 0;
+      padding: 8px 14px 0;
+      flex-wrap: wrap;
+      background: #ffffff;
+    }
+
+    .tab {
+      background: transparent;
+      border-color: transparent;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 8px 2px;
+      color: #475569;
+    }
+
+    .tab.active {
+      color: #0f68a8;
+      border-bottom-color: #0f68a8;
+    }
+
+    .table-panel {
+      background: #ffffff;
+      border: 0;
+      border-top: 1px solid #d7dee6;
+      border-radius: 0;
+      overflow: auto;
+      max-height: 260px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+      color: #111827;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #f1f5f9;
+      z-index: 1;
+      color: #0f68a8;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(17, 24, 39, 0.94);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+      z-index: 20;
+      display: none;
+      max-width: 320px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip strong {
+      color: #93c5fd;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      padding: 10px 12px;
+      border-top: 1px solid #d7dee6;
+      background: #ffffff;
+      color: #475569;
+      font-size: 12px;
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        min-height: auto;
+      }
+      main {
+        grid-template-columns: 56px minmax(260px, 340px) minmax(0, 1fr);
+        height: auto;
+        min-height: calc(100vh - 104px);
+      }
+      .side-rail { width: 56px; }
+      .rail-button {
+        width: 56px;
+        height: 48px;
+        font-size: 18px;
+      }
+      .drawer-title {
+        padding: 8px 12px;
+        min-height: 42px;
+      }
+      .drawer-section summary,
+      .layer-row,
+      .group {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      aside { border-right: 1px solid var(--line); }
+      .map-shell { min-height: 520px; }
+      .metric-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
+      svg { height: 520px; }
+    }
+
+    @media (max-width: 720px) {
+      main { grid-template-columns: 1fr; }
+      .side-rail { display: none; }
+      aside {
+        max-height: 430px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .workspace {
+        min-height: 760px;
+        overflow: visible;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 12px 14px; }
+      .brand {
+        align-items: flex-start;
+        gap: 10px;
+        max-width: 100%;
+        width: 100%;
+      }
+      .eu-mark {
+        width: 58px;
+        height: 36px;
+      }
+      h1 { font-size: 18px; }
+      .brand-copy { flex: 1; }
+      .brand-copy span { font-size: 11px; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .status { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="eu-mark" aria-hidden="true">EU</div>
+      <div class="brand-copy">
+        <span>European Commission TENtec layers</span>
+        <h1>TENtec Supply Chain Simulation</h1>
+      </div>
+    </div>
+    <div class="status"><span class="dot"></span><span id="statusText">Baseline network loaded</span></div>
+  </header>
+
+  <main>
+    <nav class="side-rail" aria-label="Map tools">
+      <button class="rail-button active" type="button" title="Layers" aria-label="Layers">&gt;</button>
+      <button class="rail-button" type="button" title="Menu" aria-label="Menu">=</button>
+      <button class="rail-button" type="button" title="Locate" aria-label="Locate">o</button>
+      <button class="rail-button" type="button" title="Legend" aria-label="Legend">#</button>
+      <button class="rail-button" type="button" title="Globe" aria-label="Globe">@</button>
+    </nav>
+
+    <aside>
+      <div class="drawer-title">
+        <span>Layers</span>
+        <button class="drawer-close" type="button" title="Close layer drawer" aria-label="Close layer drawer">x</button>
+      </div>
+
+      <details class="drawer-section" open>
+        <summary>TEN-T Regulation 2024</summary>
+        <div class="drawer-content" id="officialLayerList">
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="terminals" data-label="Rail-Road Terminals" data-layer-ids="1" />
+            <span>Rail-Road Terminals</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="ports" data-label="Ports" data-layer-ids="2" />
+            <span>Ports</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="airports" data-label="Airports" data-layer-ids="3" />
+            <span>Airports</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="urban_nodes" data-label="Urban Nodes" data-layer-ids="5,6" />
+            <span>Urban Nodes</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="roads" data-label="Roads" data-layer-ids="8,9,10" />
+            <span>Roads</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="rail_freight" data-label="Railways (Freight)" data-layer-ids="12,13,14" />
+            <span>Railways (Freight)</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="rail_passenger" data-label="Railways (passenger)" data-layer-ids="16,17,18" />
+            <span>Railways (passenger)</span>
+          </label>
+          <label class="layer-row">
+            <input type="checkbox" name="officialLayer" value="inland_waterways" data-label="Inland Waterways" data-layer-ids="19" />
+            <span>Inland Waterways</span>
+          </label>
+        </div>
+        <div class="layer-status" id="officialLayerStatus">No official layers visible</div>
+      </details>
+
+      <details class="drawer-section" open>
+        <summary>Simulation Network</summary>
+        <div class="drawer-content">
+          <label class="layer-row">
+            <input id="simulationRoutesToggle" type="checkbox" name="simulationLayer" value="routes" checked />
+            <span>Simulation routes</span>
+          </label>
+          <label class="layer-row">
+            <input id="simulationHubsToggle" type="checkbox" name="simulationLayer" value="hubs" checked />
+            <span>Simulation hubs</span>
+          </label>
+          <label class="layer-row">
+            <input id="simulationFlowToggle" type="checkbox" name="simulationLayer" value="flow" checked />
+            <span>Flow particles</span>
+          </label>
+        </div>
+      </details>
+
+      <details class="drawer-section simulation-section" open>
+        <summary>Simulation</summary>
+        <div class="drawer-content">
+          <section class="group">
+            <h2>Scenario</h2>
+            <label for="preset">Preset</label>
+            <select id="preset"></select>
+          </section>
+
+          <section class="group">
+            <h2>Manual disruption</h2>
+            <details class="checkbox-panel" id="deactivateNodePanel">
+              <summary>Deactivate nodes <span id="deactivateNodeCount">0 selected</span></summary>
+              <div class="checkbox-list" id="deactivateNodeList"></div>
+            </details>
+
+            <label for="reduceNode">Reduce node capacity</label>
+            <select id="reduceNode"></select>
+
+            <label for="nodeCapacity">Remaining capacity</label>
+            <div class="range-row">
+              <input id="nodeCapacity" type="range" min="0" max="100" value="55" step="5" />
+              <output id="nodeCapacityOut">55%</output>
+            </div>
+
+            <details class="checkbox-panel" id="deactivateEdgePanel">
+              <summary>Deactivate links <span id="deactivateEdgeCount">0 selected</span></summary>
+              <div class="checkbox-list" id="deactivateEdgeList"></div>
+            </details>
+
+            <label for="demand">Demand multiplier</label>
+            <div class="range-row">
+              <input id="demand" type="range" min="50" max="180" value="100" step="5" />
+              <output id="demandOut">100%</output>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2>Accessibility</h2>
+            <label for="origin">Origin</label>
+            <select id="origin"></select>
+          </section>
+
+          <button id="resetButton" type="button">Reset manual controls</button>
+        </div>
+      </details>
+
+      <button id="clearMapButton" class="clear-map" type="button">Clear Map and Filters</button>
+    </aside>
+
+    <section class="workspace">
+      <div class="metric-grid" id="metrics"></div>
+      <div class="map-shell">
+        <div class="map-controls" aria-label="Map zoom controls">
+          <button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+          <button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out">-</button>
+          <button id="zoomReset" type="button" title="Reset map view" aria-label="Reset map view">R</button>
+        </div>
+        <svg id="map" viewBox="0 0 1650 650" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TEN-T network map"></svg>
+        <div class="legend">
+          <span>Educational model · illustrative data</span>
+          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors (ODbL)</a>
+          <span><i style="background: var(--teal)"></i>Normal hub</span>
+          <span><i style="background: var(--red)"></i>Deactivated</span>
+          <span><i style="background: var(--orange)"></i>Affected or overloaded</span>
+          <span><i style="background: #00A9C7"></i>Route</span>
+        </div>
+      </div>
+
+      <nav class="tabs" id="tabs"></nav>
+      <div class="table-panel" id="tablePanel"></div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script id="nodesCsv" type="text/plain">id,name,country,lat,lon,hub_type,population_m,regional_gdp_billion,gdp_growth_pct,industry_index,node_capacity,damage_level
+hamburg,Hamburg,DE,53.5511,9.9937,seaport,1.91,130,1.4,92,930,0.00
+bremen,Bremen,DE,53.0793,8.8017,city_port,0.57,37,1.0,76,540,0.00
+bremerhaven,Bremerhaven,DE,53.5396,8.5809,seaport,0.11,9,0.8,71,720,0.00
+kiel,Kiel,DE,54.3233,10.1228,seaport,0.25,15,0.9,62,360,0.00
+luebeck,Luebeck,DE,53.8655,10.6866,seaport,0.22,13,0.9,64,410,0.00
+rostock,Rostock,DE,54.0924,12.0991,seaport,0.21,12,0.8,65,430,0.00
+hannover,Hannover,DE,52.3759,9.7320,rail_hub,0.54,39,1.1,78,620,0.00
+berlin,Berlin,DE,52.5200,13.4050,urban_air_rail,3.76,190,1.6,82,760,0.00
+magdeburg,Magdeburg,DE,52.1205,11.6276,inland_port,0.24,11,0.9,67,390,0.00
+leipzig_halle,Leipzig/Halle,DE,51.3402,12.3601,air_rail_hub,1.12,65,1.7,85,760,0.00
+dresden,Dresden,DE,51.0504,13.7373,urban_rail,0.56,35,1.3,72,480,0.00
+erfurt,Erfurt,DE,50.9848,11.0299,rail_hub,0.21,12,1.0,64,360,0.00
+nuremberg,Nuremberg,DE,49.4521,11.0767,urban_rail,0.52,45,1.2,79,580,0.00
+munich,Munich,DE,48.1351,11.5820,air_rail_hub,1.49,190,1.8,91,830,0.00
+regensburg,Regensburg,DE,49.0134,12.1016,inland_port,0.15,16,1.3,75,430,0.00
+passau,Passau,DE,48.5667,13.4319,border_inland_port,0.05,5,0.8,58,260,0.00
+stuttgart,Stuttgart,DE,48.7758,9.1829,industrial_hub,0.63,88,1.2,95,680,0.00
+karlsruhe,Karlsruhe,DE,49.0069,8.4037,rail_inland_port,0.31,22,1.1,80,520,0.00
+mannheim,Mannheim/Ludwigshafen,DE,49.4875,8.4660,inland_port,0.62,48,1.1,88,740,0.00
+frankfurt,Frankfurt am Main,DE,50.1109,8.6821,air_rail_hub,0.76,94,1.5,90,860,0.00
+cologne,Cologne,DE,50.9375,6.9603,urban_rail,1.09,80,1.2,84,690,0.00
+duesseldorf,Dusseldorf,DE,51.2277,6.7735,air_rail_hub,0.62,70,1.1,83,630,0.00
+duisburg,Duisburg,DE,51.4344,6.7623,inland_port,0.50,34,0.9,94,980,0.00
+dortmund,Dortmund,DE,51.5136,7.4653,industrial_hub,0.59,39,0.9,82,610,0.00
+essen,Essen,DE,51.4556,7.0116,industrial_hub,0.58,41,0.9,82,590,0.00
+aachen,Aachen,DE,50.7753,6.0839,border_rail,0.25,16,1.0,70,380,0.00
+saarbruecken,Saarbruecken,DE,49.2402,6.9969,border_rail,0.18,12,0.8,66,340,0.00
+rotterdam,Rotterdam,NL,51.9244,4.4777,seaport,0.66,92,1.4,96,1200,0.00
+amsterdam,Amsterdam,NL,52.3676,4.9041,air_sea_hub,0.92,145,1.5,88,820,0.00
+antwerp,Antwerp,BE,51.2194,4.4025,seaport,0.53,76,1.3,95,1100,0.00
+brussels,Brussels,BE,50.8503,4.3517,urban_air_rail,1.22,105,1.2,79,650,0.00
+luxembourg,Luxembourg,LU,49.6116,6.1319,air_rail_hub,0.13,75,1.8,78,430,0.00
+paris,Paris,FR,48.8566,2.3522,air_rail_hub,2.10,765,1.2,86,980,0.00
+strasbourg,Strasbourg,FR,48.5734,7.7521,border_inland_port,0.29,35,1.0,74,520,0.00
+basel,Basel,CH,47.5596,7.5886,inland_port,0.18,45,1.1,82,570,0.00
+zurich,Zurich,CH,47.3769,8.5417,air_rail_hub,0.43,160,1.3,86,620,0.00
+vienna,Vienna,AT,48.2082,16.3738,air_rail_inland,1.98,105,1.2,83,780,0.00
+linz,Linz,AT,48.3069,14.2858,inland_port,0.21,23,1.1,78,510,0.00
+prague,Prague,CZ,50.0755,14.4378,air_rail_hub,1.34,95,1.7,82,720,0.00
+wroclaw,Wroclaw,PL,51.1079,17.0385,industrial_rail,0.67,43,2.4,79,560,0.00
+poznan,Poznan,PL,52.4064,16.9252,industrial_rail,0.54,38,2.2,77,540,0.00
+copenhagen,Copenhagen,DK,55.6761,12.5683,air_sea_rail,0.80,120,1.3,83,680,0.00</script>
+
+  <script id="edgesCsv" type="text/plain">source,target,mode,corridor_name,distance_km,travel_time_h,capacity,current_flow,cost_per_ton,emissions_factor,risk_score,damage_level
+hamburg,bremen,rail,Scandinavian-Mediterranean,120,1.6,620,420,18,0.35,0.16,0.00
+bremen,bremerhaven,rail,North Sea-Baltic,65,0.9,540,380,12,0.34,0.14,0.00
+hamburg,kiel,rail,Scandinavian-Mediterranean,95,1.2,390,210,13,0.33,0.12,0.00
+hamburg,luebeck,rail,Scandinavian-Mediterranean,65,0.8,430,250,10,0.33,0.12,0.00
+luebeck,rostock,road,Baltic Sea Corridor,125,1.8,360,220,20,0.78,0.18,0.00
+hamburg,hannover,rail,Scandinavian-Mediterranean,155,1.8,760,520,20,0.34,0.15,0.00
+hannover,berlin,rail,North Sea-Baltic,285,2.1,720,500,35,0.34,0.16,0.00
+berlin,magdeburg,rail,North Sea-Baltic,155,1.4,520,330,21,0.34,0.14,0.00
+magdeburg,leipzig_halle,rail,North Sea-Baltic,125,1.2,520,360,18,0.34,0.14,0.00
+leipzig_halle,dresden,rail,Orient/East-Med,115,1.1,470,310,17,0.34,0.15,0.00
+leipzig_halle,erfurt,rail,Scandinavian-Mediterranean,145,1.2,570,370,19,0.33,0.13,0.00
+erfurt,nuremberg,rail,Scandinavian-Mediterranean,235,1.7,620,430,30,0.33,0.14,0.00
+nuremberg,munich,rail,Scandinavian-Mediterranean,170,1.2,720,520,24,0.33,0.14,0.00
+nuremberg,regensburg,rail,Rhine-Danube,105,1.0,510,330,15,0.34,0.13,0.00
+regensburg,passau,inland_waterway,Rhine-Danube,125,5.2,390,260,8,0.20,0.20,0.00
+passau,linz,inland_waterway,Rhine-Danube,95,4.3,360,230,7,0.20,0.18,0.00
+linz,vienna,rail,Rhine-Danube,185,1.4,610,410,24,0.34,0.15,0.00
+munich,linz,rail,Rhine-Danube,240,2.0,520,360,32,0.34,0.18,0.00
+munich,zurich,rail,Rhine-Alpine,315,3.5,430,280,45,0.33,0.24,0.00
+munich,stuttgart,rail,Scandinavian-Mediterranean,230,2.1,610,450,32,0.34,0.16,0.00
+stuttgart,karlsruhe,rail,Rhine-Alpine,80,0.9,560,380,12,0.33,0.13,0.00
+karlsruhe,mannheim,rail,Rhine-Alpine,70,0.7,690,470,10,0.33,0.12,0.00
+mannheim,frankfurt,rail,Rhine-Alpine,85,0.8,770,540,13,0.33,0.13,0.00
+frankfurt,cologne,rail,Rhine-Alpine,190,1.2,840,610,27,0.33,0.17,0.00
+cologne,duesseldorf,rail,Rhine-Alpine,40,0.5,760,560,8,0.33,0.14,0.00
+duesseldorf,duisburg,rail,Rhine-Alpine,30,0.4,780,620,7,0.33,0.13,0.00
+duisburg,essen,rail,Rhine-Alpine,25,0.3,720,530,6,0.33,0.12,0.00
+essen,dortmund,rail,Rhine-Alpine,35,0.4,650,470,7,0.33,0.13,0.00
+dortmund,hannover,rail,North Sea-Baltic,215,1.8,620,410,28,0.34,0.16,0.00
+duisburg,rotterdam,inland_waterway,North Sea-Rhine-Mediterranean,225,9.5,920,760,13,0.18,0.25,0.00
+duisburg,antwerp,rail,North Sea-Rhine-Mediterranean,185,2.2,840,680,27,0.34,0.20,0.00
+rotterdam,amsterdam,rail,North Sea-Baltic,80,0.9,650,420,12,0.33,0.14,0.00
+rotterdam,antwerp,maritime,North Sea-Rhine-Mediterranean,105,5.0,980,710,7,0.12,0.22,0.00
+antwerp,brussels,rail,North Sea-Rhine-Mediterranean,45,0.5,680,430,8,0.34,0.12,0.00
+brussels,aachen,rail,North Sea-Rhine-Mediterranean,145,1.3,560,350,21,0.34,0.15,0.00
+aachen,cologne,rail,North Sea-Rhine-Mediterranean,75,0.8,620,430,11,0.34,0.14,0.00
+brussels,paris,rail,Atlantic,315,1.9,780,540,38,0.33,0.15,0.00
+paris,strasbourg,rail,Rhine-Alpine,490,2.2,720,480,58,0.33,0.16,0.00
+strasbourg,karlsruhe,rail,Rhine-Alpine,85,0.8,610,390,12,0.33,0.13,0.00
+strasbourg,basel,rail,Rhine-Alpine,145,1.3,590,390,20,0.33,0.15,0.00
+basel,mannheim,inland_waterway,Rhine-Alpine,270,12.0,620,460,16,0.18,0.28,0.00
+basel,zurich,rail,Rhine-Alpine,85,0.8,570,360,13,0.33,0.14,0.00
+frankfurt,luxembourg,rail,North Sea-Rhine-Mediterranean,240,2.5,470,300,34,0.34,0.18,0.00
+luxembourg,saarbruecken,rail,North Sea-Rhine-Mediterranean,100,1.2,390,240,15,0.34,0.15,0.00
+saarbruecken,mannheim,rail,North Sea-Rhine-Mediterranean,145,1.5,430,290,20,0.34,0.15,0.00
+dresden,prague,rail,Orient/East-Med,150,2.1,430,300,23,0.34,0.20,0.00
+prague,nuremberg,rail,Rhine-Danube,300,3.2,440,300,42,0.34,0.21,0.00
+prague,wroclaw,rail,Baltic-Adriatic,280,3.4,390,250,38,0.35,0.20,0.00
+wroclaw,poznan,rail,Baltic-Adriatic,175,2.2,430,280,25,0.35,0.16,0.00
+poznan,berlin,rail,North Sea-Baltic,270,2.8,480,330,36,0.35,0.17,0.00
+hamburg,copenhagen,rail,Scandinavian-Mediterranean,335,4.5,430,270,44,0.35,0.20,0.00
+copenhagen,rostock,maritime,Scandinavian-Mediterranean,175,6.0,460,260,11,0.13,0.22,0.00
+berlin,rostock,rail,Scandinavian-Mediterranean,235,2.2,430,250,30,0.34,0.17,0.00
+frankfurt,nuremberg,rail,Rhine-Danube,225,1.8,640,430,30,0.34,0.15,0.00
+duisburg,hannover,rail,North Sea-Baltic,245,2.1,580,400,31,0.34,0.17,0.00</script>
+
+  <script src="assets/edge_routes.js"></script>
+  <script>
+    const scenarios = [
+      { id: "baseline", name: "Baseline", targetType: "none", targetId: "", capacityMultiplier: 1, demandMultiplier: 1, blocked: false },
+      { id: "duisburg_out", name: "Duisburg shutdown", targetType: "node", targetId: "duisburg", capacityMultiplier: 0, demandMultiplier: 1, blocked: true },
+      { id: "hamburg_reduced", name: "Hamburg port congestion", targetType: "node", targetId: "hamburg", capacityMultiplier: 0.45, demandMultiplier: 1.05, blocked: false },
+      { id: "rhine_disruption", name: "Rhine corridor disruption", targetType: "edge", targetId: "duisburg--rotterdam", capacityMultiplier: 0, demandMultiplier: 1, blocked: true },
+      { id: "eastern_growth", name: "Eastern demand growth", targetType: "region", targetId: "east_growth", capacityMultiplier: 1, demandMultiplier: 1.25, blocked: false },
+      { id: "alpine_pressure", name: "Alpine link capacity pressure", targetType: "region", targetId: "alpine", capacityMultiplier: 0.55, demandMultiplier: 1, blocked: false }
+    ];
+
+    const eastGrowthNodes = new Set(["leipzig_halle", "dresden", "prague", "wroclaw", "poznan", "berlin"]);
+    const alpineEdges = new Set(["basel--zurich", "munich--zurich"]);
+    const routeColor = "#00A9C7";
+    const routeWidth = 4.2;
+    const modeColors = { rail: routeColor, road: routeColor, inland_waterway: routeColor, maritime: routeColor };
+    const modeWidths = { rail: routeWidth, road: routeWidth, inland_waterway: routeWidth, maritime: routeWidth };
+    const tabs = ["Impact", "Bottlenecks", "Strategic hubs", "Accessibility", "Data"];
+    let activeTab = "Impact";
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/);
+      const headers = lines.shift().split(",");
+      return lines.map(line => {
+        const values = line.split(",");
+        const row = {};
+        headers.forEach((header, index) => {
+          const raw = values[index] ?? "";
+          const numeric = Number(raw);
+          row[header] = raw !== "" && Number.isFinite(numeric) ? numeric : raw;
+        });
+        return row;
+      });
+    }
+
+    const nodes = parseCsv(document.getElementById("nodesCsv").textContent);
+    const edges = parseCsv(document.getElementById("edgesCsv").textContent).map(edge => ({ ...edge, id: edgeKey(edge.source, edge.target) }));
+    const nodeById = Object.fromEntries(nodes.map(node => [node.id, node]));
+
+    function edgeKey(a, b) {
+      return [a, b].sort().join("--");
+    }
+
+    function selectedValues(name) {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
+    }
+
+    function selectedSet(name) {
+      return new Set(selectedValues(name));
+    }
+
+    function checkedInputs(name) {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`));
+    }
+
+    function activeOfficialLayerIds() {
+      return checkedInputs("officialLayer").flatMap(input =>
+        input.dataset.layerIds.split(",").map(value => Number(value.trim())).filter(Number.isFinite)
+      );
+    }
+
+    function activeOfficialLayerLabels() {
+      return checkedInputs("officialLayer").map(input => input.dataset.label || input.value);
+    }
+
+    function simulationLayerEnabled(value) {
+      const input = document.querySelector(`input[name="simulationLayer"][value="${value}"]`);
+      return !input || input.checked;
+    }
+
+    function updateSelectionCount(name, countId) {
+      const count = selectedValues(name).length;
+      document.getElementById(countId).textContent = `${count} selected`;
+    }
+
+    function checkboxId(name, value) {
+      return `${name}-${value}`.replace(/[^a-zA-Z0-9_-]/g, "_");
+    }
+
+    function renderCheckboxGroup(containerId, name, items, countId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = items.map(item => {
+        const id = checkboxId(name, item.value);
+        return `
+          <label class="check-row" for="${id}">
+            <input id="${id}" name="${name}" type="checkbox" value="${item.value}" />
+            <span>${item.label}</span>
+          </label>
+        `;
+      }).join("");
+      container.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", () => {
+          updateSelectionCount(name, countId);
+          render();
+        });
+      });
+      updateSelectionCount(name, countId);
+    }
+
+    function clearCheckboxGroup(name, countId) {
+      document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+        input.checked = false;
+      });
+      updateSelectionCount(name, countId);
+    }
+
+    function setCheckboxValue(name, value, checked) {
+      const input = document.getElementById(checkboxId(name, value));
+      if (!input) return;
+      input.checked = checked;
+      updateSelectionCount(name, name === "deactivateNode" ? "deactivateNodeCount" : "deactivateEdgeCount");
+    }
+
+    function cloneState() {
+      return {
+        nodes: nodes.map(node => ({ ...node, active: true })),
+        edges: edges.map(edge => ({ ...edge, active: true, simulated_flow: 0 })),
+        demandMultiplier: 1,
+        regionalDemandMultiplier: 1,
+        regionalNodes: new Set()
+      };
+    }
+
+    function nodeMap(state) {
+      return Object.fromEntries(state.nodes.map(node => [node.id, node]));
+    }
+
+    function activeNodes(state) {
+      return state.nodes.filter(node => node.active);
+    }
+
+    function activeEdges(state) {
+      const map = nodeMap(state);
+      return state.edges.filter(edge => edge.active && map[edge.source]?.active && map[edge.target]?.active);
+    }
+
+    function neighbors(state, id) {
+      return activeEdges(state)
+        .filter(edge => edge.source === id || edge.target === id)
+        .map(edge => ({ id: edge.source === id ? edge.target : edge.source, edge }));
+    }
+
+    function reduceNodeCapacity(state, id, multiplier) {
+      const map = nodeMap(state);
+      if (!map[id]?.active) return;
+      map[id].node_capacity *= multiplier;
+      state.edges.forEach(edge => {
+        if (edge.source === id || edge.target === id) edge.capacity *= multiplier;
+      });
+    }
+
+    function removeNode(state, id) {
+      const map = nodeMap(state);
+      if (map[id]) map[id].active = false;
+    }
+
+    function removeEdge(state, id) {
+      const edge = state.edges.find(item => item.id === id);
+      if (edge) edge.active = false;
+    }
+
+    function reduceEdge(state, id, multiplier) {
+      const edge = state.edges.find(item => item.id === id);
+      if (edge) edge.capacity *= multiplier;
+    }
+
+    function applyPreset(state, scenario) {
+      state.demandMultiplier = scenario.targetType === "region" ? 1 : scenario.demandMultiplier;
+      if (scenario.targetType === "node") {
+        if (scenario.blocked) removeNode(state, scenario.targetId);
+        else reduceNodeCapacity(state, scenario.targetId, scenario.capacityMultiplier);
+      }
+      if (scenario.targetType === "edge") {
+        if (scenario.blocked) removeEdge(state, scenario.targetId);
+        else reduceEdge(state, scenario.targetId, scenario.capacityMultiplier);
+      }
+      if (scenario.targetType === "region" && scenario.targetId === "east_growth") {
+        state.regionalDemandMultiplier = scenario.demandMultiplier;
+        state.regionalNodes = new Set(eastGrowthNodes);
+      }
+      if (scenario.targetType === "region" && scenario.targetId === "alpine") {
+        alpineEdges.forEach(id => reduceEdge(state, id, scenario.capacityMultiplier));
+      }
+    }
+
+    function estimateDemand(state, source, target) {
+      const map = nodeMap(state);
+      const a = map[source];
+      const b = map[target];
+      const populationFactor = Math.sqrt(a.population_m * b.population_m);
+      const industryFactor = (a.industry_index + b.industry_index) / 100;
+      const gdpFactor = Math.sqrt(a.regional_gdp_billion * b.regional_gdp_billion) / 100;
+      let demand = Math.max(0.2, populationFactor * industryFactor + 0.35 * gdpFactor);
+      demand *= state.demandMultiplier;
+      if (state.regionalNodes.has(source) || state.regionalNodes.has(target)) demand *= state.regionalDemandMultiplier;
+      return demand;
+    }
+
+    function dijkstra(state, origin) {
+      const ids = activeNodes(state).map(node => node.id);
+      const distances = Object.fromEntries(ids.map(id => [id, Infinity]));
+      const previous = {};
+      const unvisited = new Set(ids);
+      if (!unvisited.has(origin)) return { distances, previous };
+      distances[origin] = 0;
+
+      while (unvisited.size) {
+        let current = null;
+        let best = Infinity;
+        for (const id of unvisited) {
+          if (distances[id] < best) {
+            best = distances[id];
+            current = id;
+          }
+        }
+        if (current === null) break;
+        unvisited.delete(current);
+        for (const next of neighbors(state, current)) {
+          if (!unvisited.has(next.id)) continue;
+          const candidate = distances[current] + Number(next.edge.travel_time_h);
+          if (candidate < distances[next.id]) {
+            distances[next.id] = candidate;
+            previous[next.id] = current;
+          }
+        }
+      }
+      return { distances, previous };
+    }
+
+    function pathFrom(previous, origin, target) {
+      if (origin === target) return [origin];
+      const path = [target];
+      let current = target;
+      while (previous[current]) {
+        current = previous[current];
+        path.unshift(current);
+        if (current === origin) return path;
+      }
+      return [];
+    }
+
+    function allocateFlows(state) {
+      state.edges.forEach(edge => { edge.simulated_flow = 0; });
+      const ids = activeNodes(state).map(node => node.id);
+      ids.forEach((source, index) => {
+        const { distances, previous } = dijkstra(state, source);
+        ids.slice(index + 1).forEach(target => {
+          if (!Number.isFinite(distances[target])) return;
+          const path = pathFrom(previous, source, target);
+          if (path.length < 2) return;
+          const flow = estimateDemand(state, source, target) / (path.length - 1);
+          for (let i = 0; i < path.length - 1; i += 1) {
+            const id = edgeKey(path[i], path[i + 1]);
+            const edge = state.edges.find(item => item.id === id);
+            if (edge && edge.active) edge.simulated_flow += flow;
+          }
+        });
+      });
+      return state;
+    }
+
+    function connectedComponents(state) {
+      const ids = activeNodes(state).map(node => node.id);
+      const seen = new Set();
+      const components = [];
+      ids.forEach(id => {
+        if (seen.has(id)) return;
+        const stack = [id];
+        const component = [];
+        seen.add(id);
+        while (stack.length) {
+          const current = stack.pop();
+          component.push(current);
+          neighbors(state, current).forEach(next => {
+            if (!seen.has(next.id)) {
+              seen.add(next.id);
+              stack.push(next.id);
+            }
+          });
+        }
+        components.push(component);
+      });
+      return components;
+    }
+
+    function summary(state, baseline = null) {
+      const components = connectedComponents(state);
+      const aEdges = activeEdges(state);
+      const totalCapacity = aEdges.reduce((sum, edge) => sum + Number(edge.capacity), 0);
+      const totalFlow = aEdges.reduce((sum, edge) => sum + Number(edge.simulated_flow || edge.current_flow), 0);
+      const overloaded = aEdges.filter(edge => edge.capacity > 0 && edge.simulated_flow / edge.capacity >= 0.9).length;
+      const result = {
+        nodes: activeNodes(state).length,
+        edges: aEdges.length,
+        components: components.length,
+        largestComponent: Math.max(0, ...components.map(component => component.length)),
+        totalCapacity,
+        totalFlow,
+        overloadedEdges: overloaded,
+        lostPopulation: 0,
+        lostGdp: 0
+      };
+      if (baseline) {
+        const active = new Set(activeNodes(state).map(node => node.id));
+        baseline.nodes.forEach(node => {
+          if (!active.has(node.id)) {
+            result.lostPopulation += Number(node.population_m);
+            result.lostGdp += Number(node.regional_gdp_billion);
+          }
+        });
+      }
+      return result;
+    }
+
+    function bottlenecks(state) {
+      return activeEdges(state)
+        .map(edge => ({
+          edge: `${nodeById[edge.source].name} -> ${nodeById[edge.target].name}`,
+          mode: edge.mode,
+          corridor: edge.corridor_name,
+          capacity: edge.capacity,
+          flow: edge.simulated_flow,
+          utilization: edge.capacity > 0 ? edge.simulated_flow / edge.capacity : Infinity,
+          risk: edge.risk_score
+        }))
+        .sort((a, b) => b.utilization - a.utilization || b.risk - a.risk);
+    }
+
+    function centrality(state) {
+      const ids = activeNodes(state).map(node => node.id);
+      const rows = ids.map(id => ({ id, name: nodeById[id].name, country: nodeById[id].country, degree: neighbors(state, id).length / Math.max(1, ids.length - 1), closeness: 0, betweenness: 0, strategic: 0 }));
+      const rowById = Object.fromEntries(rows.map(row => [row.id, row]));
+      ids.forEach(source => {
+        const { distances, previous } = dijkstra(state, source);
+        let reachable = 0;
+        let total = 0;
+        ids.forEach(target => {
+          if (target !== source && Number.isFinite(distances[target])) {
+            reachable += 1;
+            total += distances[target];
+            const path = pathFrom(previous, source, target);
+            path.slice(1, -1).forEach(id => { rowById[id].betweenness += 1; });
+          }
+        });
+        rowById[source].closeness = total > 0 ? reachable / total : 0;
+      });
+      const maxBetween = Math.max(1, ...rows.map(row => row.betweenness));
+      rows.forEach(row => {
+        row.betweenness /= maxBetween;
+        row.strategic = 0.35 * row.betweenness + 0.35 * row.closeness + 0.30 * row.degree;
+      });
+      return rows.sort((a, b) => b.strategic - a.strategic);
+    }
+
+    function accessibility(state, baseline, origin) {
+      const baseDistances = dijkstra(baseline, origin).distances;
+      const currentDistances = dijkstra(state, origin).distances;
+      return baseline.nodes
+        .filter(node => node.id !== origin)
+        .map(node => {
+          const before = baseDistances[node.id];
+          const after = currentDistances[node.id];
+          const status = !Number.isFinite(after) ? "unreachable" : after - before > 0.05 ? "slower" : "stable";
+          return {
+            name: node.name,
+            country: node.country,
+            baseline: Number.isFinite(before) ? before : null,
+            scenario: Number.isFinite(after) ? after : null,
+            delta: Number.isFinite(after) && Number.isFinite(before) ? after - before : null,
+            status,
+            gdp: node.regional_gdp_billion
+          };
+        })
+        .sort((a, b) => {
+          if (a.status !== b.status) return a.status === "unreachable" ? -1 : b.status === "unreachable" ? 1 : 0;
+          return (b.delta ?? -999) - (a.delta ?? -999);
+        });
+    }
+
+    const baselineState = allocateFlows(cloneState());
+    const baseMapView = { x: 0, y: 0, width: 1650, height: 650 };
+    const mapView = { ...baseMapView };
+    const maxMapZoom = 32;
+    const tileZoomMin = 6;
+    const tileZoomMax = 12;
+    const mapBounds = { lonMin: -2.8, lonMax: 21.8, latMin: 46.8, latMax: 55.9 };
+    const officialMapServiceUrl = "https://webgate.ec.europa.eu/tentec-maps/api/public/gis/TENT_Regulation_2024/MapServer/export";
+    const officialDefaultLayerValues = new Set();
+    const webMercatorLimit = 20037508.342789244;
+    const mercatorY = lat => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+    const inverseMercatorY = value => (2 * Math.atan(Math.exp(value)) - Math.PI / 2) * 180 / Math.PI;
+    const projectedMapBounds = {
+      yMin: mercatorY(mapBounds.latMin),
+      yMax: mercatorY(mapBounds.latMax)
+    };
+    let dragState = null;
+    let suppressNodeClick = false;
+    let officialOverlayTimer = null;
+    let officialOverlayRequest = 0;
+
+    function currentState() {
+      const state = cloneState();
+      const preset = scenarios.find(item => item.id === document.getElementById("preset").value);
+      applyPreset(state, preset);
+
+      const deactivateNodes = selectedValues("deactivateNode");
+      const deactivatedNodeSet = new Set(deactivateNodes);
+      const reduceNode = document.getElementById("reduceNode").value;
+      const deactivateEdges = selectedValues("deactivateEdge");
+      const nodeCapacity = Number(document.getElementById("nodeCapacity").value) / 100;
+      const demand = Number(document.getElementById("demand").value) / 100;
+
+      deactivateEdges.forEach(id => removeEdge(state, id));
+      deactivateNodes.forEach(id => removeNode(state, id));
+      if (reduceNode !== "none" && !deactivatedNodeSet.has(reduceNode)) reduceNodeCapacity(state, reduceNode, nodeCapacity);
+      state.demandMultiplier *= demand;
+      return allocateFlows(state);
+    }
+
+    function clampMapView() {
+      const minWidth = baseMapView.width / maxMapZoom;
+      const maxWidth = baseMapView.width;
+      mapView.width = Math.min(maxWidth, Math.max(minWidth, mapView.width));
+      mapView.height = mapView.width * (baseMapView.height / baseMapView.width);
+
+      if (mapView.width >= baseMapView.width) {
+        Object.assign(mapView, baseMapView);
+        return;
+      }
+
+      const maxX = baseMapView.width - mapView.width;
+      const maxY = baseMapView.height - mapView.height;
+      mapView.x = Math.min(maxX, Math.max(0, mapView.x));
+      mapView.y = Math.min(maxY, Math.max(0, mapView.y));
+    }
+
+    function applyMapView() {
+      clampMapView();
+      document.getElementById("map").setAttribute("viewBox", `${mapView.x} ${mapView.y} ${mapView.width} ${mapView.height}`);
+      updateBaseMapTiles();
+      updateOverlayScale();
+      scheduleOfficialOverlayUpdate();
+    }
+
+    function screenToMapPoint(event) {
+      const svg = document.getElementById("map");
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: mapView.x + ((event.clientX - rect.left) / rect.width) * mapView.width,
+        y: mapView.y + ((event.clientY - rect.top) / rect.height) * mapView.height
+      };
+    }
+
+    function zoomMap(factor, center = null) {
+      center ??= {
+        x: mapView.x + mapView.width / 2,
+        y: mapView.y + mapView.height / 2
+      };
+      const nextWidth = Math.min(baseMapView.width, Math.max(baseMapView.width / maxMapZoom, mapView.width * factor));
+      const scale = nextWidth / mapView.width;
+      mapView.x = center.x - (center.x - mapView.x) * scale;
+      mapView.y = center.y - (center.y - mapView.y) * scale;
+      mapView.width = nextWidth;
+      mapView.height = mapView.width * (baseMapView.height / baseMapView.width);
+      applyMapView();
+    }
+
+    function resetMapView() {
+      Object.assign(mapView, baseMapView);
+      applyMapView();
+    }
+
+    function project(node) {
+      return lonLatToPoint(node.lon, node.lat);
+    }
+
+    function lonLatToPoint(lon, lat) {
+      return {
+        x: ((lon - mapBounds.lonMin) / (mapBounds.lonMax - mapBounds.lonMin)) * baseMapView.width,
+        y: ((projectedMapBounds.yMax - mercatorY(lat)) / (projectedMapBounds.yMax - projectedMapBounds.yMin)) * baseMapView.height
+      };
+    }
+
+    function pointToLonLat(x, y) {
+      const mercY = projectedMapBounds.yMax - (y / baseMapView.height) * (projectedMapBounds.yMax - projectedMapBounds.yMin);
+      return {
+        lon: mapBounds.lonMin + (x / baseMapView.width) * (mapBounds.lonMax - mapBounds.lonMin),
+        lat: inverseMercatorY(mercY)
+      };
+    }
+
+    function lonLatToWebMercator(lon, lat) {
+      const clampedLat = clamp(lat, -85.05112878, 85.05112878);
+      const x = lon * webMercatorLimit / 180;
+      const y = Math.log(Math.tan((90 + clampedLat) * Math.PI / 360)) / (Math.PI / 180) * webMercatorLimit / 180;
+      return { x, y };
+    }
+
+    function svgEl(tag, attributes = {}) {
+      const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+      return element;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function lonToTileX(lon, zoom) {
+      return Math.floor(((lon + 180) / 360) * 2 ** zoom);
+    }
+
+    function latToTileY(lat, zoom) {
+      const radians = lat * Math.PI / 180;
+      return Math.floor((1 - Math.log(Math.tan(radians) + 1 / Math.cos(radians)) / Math.PI) / 2 * 2 ** zoom);
+    }
+
+    function tileXToLon(x, zoom) {
+      return x / 2 ** zoom * 360 - 180;
+    }
+
+    function tileYToLat(y, zoom) {
+      return Math.atan(Math.sinh(Math.PI * (1 - 2 * y / 2 ** zoom))) * 180 / Math.PI;
+    }
+
+    function currentTileZoom() {
+      const zoomLevel = Math.round(tileZoomMin + Math.log2(baseMapView.width / mapView.width));
+      return clamp(zoomLevel, tileZoomMin, tileZoomMax);
+    }
+
+    function updateBaseMapTiles() {
+      const baseLayer = document.getElementById("baseTileLayer");
+      if (!baseLayer) return;
+
+      const zoom = currentTileZoom();
+      const northWest = pointToLonLat(mapView.x, mapView.y);
+      const southEast = pointToLonLat(mapView.x + mapView.width, mapView.y + mapView.height);
+      const maxTile = 2 ** zoom - 1;
+      const xStart = clamp(lonToTileX(northWest.lon, zoom) - 1, 0, maxTile);
+      const xEnd = clamp(lonToTileX(southEast.lon, zoom) + 1, 0, maxTile);
+      const yStart = clamp(latToTileY(northWest.lat, zoom) - 1, 0, maxTile);
+      const yEnd = clamp(latToTileY(southEast.lat, zoom) + 1, 0, maxTile);
+      const signature = `${zoom}:${xStart}:${xEnd}:${yStart}:${yEnd}`;
+
+      if (baseLayer.dataset.tileSignature === signature) return;
+      baseLayer.dataset.tileSignature = signature;
+      baseLayer.innerHTML = "";
+
+      for (let tileY = yStart; tileY <= yEnd; tileY += 1) {
+        for (let tileX = xStart; tileX <= xEnd; tileX += 1) {
+          const topLeft = lonLatToPoint(tileXToLon(tileX, zoom), tileYToLat(tileY, zoom));
+          const bottomRight = lonLatToPoint(tileXToLon(tileX + 1, zoom), tileYToLat(tileY + 1, zoom));
+          baseLayer.appendChild(svgEl("image", {
+            class: "map-tile",
+            href: `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`,
+            x: topLeft.x,
+            y: topLeft.y,
+            width: bottomRight.x - topLeft.x,
+            height: bottomRight.y - topLeft.y,
+            preserveAspectRatio: "none"
+          }));
+        }
+      }
+    }
+
+    function officialOverlayUrl() {
+      const layerIds = activeOfficialLayerIds();
+      if (!layerIds.length) return "";
+
+      const svg = document.getElementById("map");
+      const rect = svg.getBoundingClientRect();
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const imageWidth = Math.max(400, Math.round((rect.width || baseMapView.width) * pixelRatio));
+      const imageHeight = Math.max(260, Math.round((rect.height || baseMapView.height) * pixelRatio));
+      const northWest = pointToLonLat(mapView.x, mapView.y);
+      const southEast = pointToLonLat(mapView.x + mapView.width, mapView.y + mapView.height);
+      const northWestMercator = lonLatToWebMercator(northWest.lon, northWest.lat);
+      const southEastMercator = lonLatToWebMercator(southEast.lon, southEast.lat);
+      const bbox = [
+        northWestMercator.x,
+        southEastMercator.y,
+        southEastMercator.x,
+        northWestMercator.y
+      ].map(value => value.toFixed(2)).join(",");
+
+      return [
+        `${officialMapServiceUrl}?f=image`,
+        "format=png32",
+        "transparent=true",
+        `layers=show:${layerIds.join(",")}`,
+        `bbox=${bbox}`,
+        "bboxSR=3857",
+        "imageSR=3857",
+        `size=${imageWidth},${imageHeight}`
+      ].join("&");
+    }
+
+    function updateOfficialLayerStatus(message = null, isError = false) {
+      const status = document.getElementById("officialLayerStatus");
+      if (!status) return;
+      status.classList.toggle("error", isError);
+      if (message) {
+        status.textContent = message;
+        return;
+      }
+      const labels = activeOfficialLayerLabels();
+      status.textContent = labels.length ? `${labels.join(", ")} visible` : "No official layers visible";
+    }
+
+    function updateOfficialOverlay() {
+      clearTimeout(officialOverlayTimer);
+      const layer = document.getElementById("officialOverlayLayer");
+      if (!layer) return;
+
+      const url = officialOverlayUrl();
+      layer.innerHTML = "";
+      if (!url) {
+        updateOfficialLayerStatus();
+        return;
+      }
+
+      const requestId = ++officialOverlayRequest;
+      const image = svgEl("image", {
+        class: "official-overlay",
+        href: url,
+        x: mapView.x,
+        y: mapView.y,
+        width: mapView.width,
+        height: mapView.height,
+        preserveAspectRatio: "none"
+      });
+      image.addEventListener("load", () => {
+        if (requestId === officialOverlayRequest) updateOfficialLayerStatus();
+      });
+      image.addEventListener("error", () => {
+        if (requestId === officialOverlayRequest) {
+          updateOfficialLayerStatus("Official TENtec overlay could not be loaded. Simulation remains available.", true);
+        }
+      });
+      updateOfficialLayerStatus("Loading official TENtec layers...");
+      layer.appendChild(image);
+    }
+
+    function scheduleOfficialOverlayUpdate(delay = 220) {
+      clearTimeout(officialOverlayTimer);
+      officialOverlayTimer = setTimeout(updateOfficialOverlay, delay);
+    }
+
+    function updateOverlayScale() {
+      const overlayScale = baseMapView.width / mapView.width;
+      document.querySelectorAll(".node").forEach(circle => {
+        circle.setAttribute("r", Number(circle.dataset.baseRadius) / overlayScale);
+        circle.setAttribute("stroke-width", 1.5 / overlayScale);
+      });
+      document.querySelectorAll(".map-label").forEach(label => {
+        label.setAttribute("font-size", 11 / overlayScale);
+        label.setAttribute("stroke-width", 3 / overlayScale);
+      });
+    }
+
+    function drawBaseMap(svg) {
+      const fallback = svgEl("image", {
+        class: "base-map",
+        href: "assets/normal_map_osm.png",
+        x: 0,
+        y: 0,
+        width: 1650,
+        height: 650,
+        preserveAspectRatio: "none"
+      });
+      svg.appendChild(fallback);
+      svg.appendChild(svgEl("g", { id: "baseTileLayer" }));
+      updateBaseMapTiles();
+      const attribution = svgEl("text", { class: "map-attribution", x: 1638, y: 636, "text-anchor": "end" });
+      attribution.textContent = "Map data (C) OpenStreetMap contributors; official TEN-T layers (C) European Commission";
+      svg.appendChild(attribution);
+    }
+
+    function routePath(edge) {
+      const route = window.EDGE_ROUTES?.[edge.id];
+      const coords = route?.length ? route : [[nodeById[edge.source].lon, nodeById[edge.source].lat], [nodeById[edge.target].lon, nodeById[edge.target].lat]];
+      return coords.map(([lon, lat], index) => {
+        const point = project({ lon, lat });
+        return `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+      }).join(" ");
+    }
+
+    function showTooltip(event, html) {
+      const tooltip = document.getElementById("tooltip");
+      tooltip.innerHTML = html;
+      tooltip.style.display = "block";
+      tooltip.style.left = `${event.clientX + 12}px`;
+      tooltip.style.top = `${event.clientY + 12}px`;
+    }
+
+    function hideTooltip() {
+      document.getElementById("tooltip").style.display = "none";
+    }
+
+    function percent(value) {
+      return `${Math.round(value * 100)}%`;
+    }
+
+    function nodeStatus(node, currentNode, selectedNodes, map, activeEdgeSet) {
+      if (selectedNodes.has(node.id)) return "Manually deactivated";
+      if (!currentNode?.active) return "Unavailable";
+      if (neighbors(baselineState, node.id).some(next => !map[next.id]?.active || !activeEdgeSet.has(next.edge.id))) return "Affected";
+      return "Active";
+    }
+
+    function addFlowParticles(container, pathD, utilization) {
+      const capped = clamp(utilization, 0.12, 1.35);
+      const count = utilization >= 1 ? 3 : utilization >= 0.75 ? 2 : 1;
+      const duration = Math.max(2.2, 7.2 - capped * 3.6);
+      const fill = utilization >= 1 ? "#f59f00" : utilization >= 0.9 ? "#D1D646" : "#e8ed78";
+      for (let index = 0; index < count; index += 1) {
+        const particle = svgEl("circle", {
+          class: "flow-particle",
+          r: utilization >= 1 ? 3.2 : 2.4,
+          fill
+        });
+        const motion = svgEl("animateMotion", {
+          path: pathD,
+          dur: `${duration.toFixed(1)}s`,
+          begin: `${(-duration * index / count).toFixed(2)}s`,
+          repeatCount: "indefinite"
+        });
+        particle.appendChild(motion);
+        container.appendChild(particle);
+      }
+    }
+
+    function drawMap(state) {
+      const svg = document.getElementById("map");
+      svg.innerHTML = "";
+      applyMapView();
+      drawBaseMap(svg);
+      const officialOverlayLayer = svgEl("g", { id: "officialOverlayLayer" });
+      svg.appendChild(officialOverlayLayer);
+      updateOfficialOverlay();
+      const map = nodeMap(state);
+      const activeEdgeSet = new Set(activeEdges(state).map(edge => edge.id));
+      const deactivatedNodes = selectedSet("deactivateNode");
+      const deactivatedEdges = selectedSet("deactivateEdge");
+      const selectedOrigin = document.getElementById("origin").value;
+      const showSimulationRoutes = simulationLayerEnabled("routes");
+      const showSimulationHubs = simulationLayerEnabled("hubs");
+      const showFlowParticles = showSimulationRoutes && simulationLayerEnabled("flow");
+      const routeCasingLayer = svgEl("g", { id: "routeCasingLayer" });
+      const routeLineLayer = svgEl("g", { id: "routeLineLayer" });
+      const flowLayer = svgEl("g", { id: "flowLayer" });
+      if (showSimulationRoutes) {
+        svg.appendChild(routeCasingLayer);
+        svg.appendChild(routeLineLayer);
+        svg.appendChild(flowLayer);
+      }
+
+      if (showSimulationRoutes) edges.forEach(edge => {
+        const source = nodeById[edge.source];
+        const target = nodeById[edge.target];
+        const active = activeEdgeSet.has(edge.id);
+        const currentEdge = state.edges.find(item => item.id === edge.id);
+        const capacity = currentEdge?.capacity ?? edge.capacity;
+        const flow = currentEdge?.simulated_flow ?? 0;
+        const utilization = active && capacity > 0 ? flow / capacity : 0;
+        const status = deactivatedEdges.has(edge.id)
+          ? "Manually deactivated"
+          : !map[edge.source]?.active || !map[edge.target]?.active
+            ? "Stopped by node disruption"
+            : active
+              ? utilization >= 1 ? "Overloaded" : utilization >= 0.9 ? "Near capacity" : "Moving"
+              : "Stopped";
+        const pathD = routePath(edge);
+        const casing = svgEl("path", { d: pathD, class: "edge-casing" });
+        const line = svgEl("path", { d: pathD, class: `edge ${active ? "" : "inactive"}` });
+        let color = modeColors[edge.mode] || "#7a7f8a";
+        let width = modeWidths[edge.mode] || 3;
+        if (deactivatedEdges.has(edge.id) || !active) { color = "#d64545"; width = 4; }
+        else if (utilization >= 1) { color = "#c92a2a"; width = 5; }
+        else if (utilization >= 0.9) { color = "#f08c00"; width = 4; }
+        casing.setAttribute("stroke-width", width + 4.5);
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-width", width);
+        line.addEventListener("mousemove", event => showTooltip(event, `<strong>${source.name} -> ${target.name}</strong><br>Status: ${status}<br>Mode: ${edge.mode}<br>Corridor: ${edge.corridor_name}<br>Capacity: ${formatNumber(capacity)}<br>Simulated flow: ${formatNumber(flow, 1)}<br>Utilization: ${active ? percent(utilization) : "0%"}<br>Travel time: ${edge.travel_time_h} h<br>Distance: ${edge.distance_km} km<br>Emissions factor: ${edge.emissions_factor}<br>Risk score: ${edge.risk_score}`));
+        line.addEventListener("mouseleave", hideTooltip);
+        line.addEventListener("click", () => {
+          setCheckboxValue("deactivateEdge", edge.id, !deactivatedEdges.has(edge.id));
+          render();
+        });
+        routeCasingLayer.appendChild(casing);
+        routeLineLayer.appendChild(line);
+        if (showFlowParticles && active && flow > 0) addFlowParticles(flowLayer, pathD, utilization);
+      });
+
+      if (showSimulationHubs) nodes.forEach(node => {
+        const p = project(node);
+        const currentNode = map[node.id];
+        const active = currentNode?.active;
+        const status = nodeStatus(node, currentNode, deactivatedNodes, map, activeEdgeSet);
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", p.x);
+        circle.setAttribute("cy", p.y);
+        circle.dataset.baseRadius = node.id === selectedOrigin ? 8 : active ? 6 : 8;
+        circle.setAttribute("r", circle.dataset.baseRadius);
+        circle.setAttribute("class", "node");
+        let fill = "#19535F";
+        if (!active || deactivatedNodes.has(node.id)) fill = "#d64545";
+        else if (node.id === selectedOrigin) fill = "#D1D646";
+        else if (neighbors(baselineState, node.id).some(next => !map[next.id]?.active || !activeEdgeSet.has(next.edge.id))) fill = "#f08c00";
+        circle.setAttribute("fill", fill);
+        circle.addEventListener("mousemove", event => showTooltip(event, `<strong>${node.name} (${node.country})</strong><br>Status: ${status}<br>Hub type: ${node.hub_type}<br>Capacity: ${formatNumber(currentNode?.node_capacity ?? node.node_capacity)}<br>Population: ${node.population_m} m<br>GDP: ${node.regional_gdp_billion} bn<br>Industry index: ${node.industry_index}`));
+        circle.addEventListener("mouseleave", hideTooltip);
+        circle.addEventListener("click", () => {
+          if (suppressNodeClick) return;
+          setCheckboxValue("deactivateNode", node.id, !deactivatedNodes.has(node.id));
+          render();
+        });
+        svg.appendChild(circle);
+
+        if (["hamburg", "berlin", "duisburg", "frankfurt", "munich", "rotterdam", "antwerp", "prague", "vienna"].includes(node.id)) {
+          const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          label.setAttribute("x", p.x + 8);
+          label.setAttribute("y", p.y - 8);
+          label.setAttribute("class", "map-label");
+          label.textContent = node.name;
+          svg.appendChild(label);
+        }
+      });
+      updateOverlayScale();
+    }
+
+    function formatNumber(value, decimals = 0) {
+      return Number(value).toLocaleString("en-US", { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+    }
+
+    function renderMetrics(current, base) {
+      const items = [
+        ["Active nodes", current.nodes, current.nodes - base.nodes],
+        ["Active links", current.edges, current.edges - base.edges],
+        ["Capacity", formatNumber(current.totalCapacity), formatNumber(current.totalCapacity - base.totalCapacity)],
+        ["Overloaded links", current.overloadedEdges, current.overloadedEdges - base.overloadedEdges],
+        ["GDP exposure", `${formatNumber(current.lostGdp, 1)} bn`, ""]
+      ];
+      document.getElementById("metrics").innerHTML = items.map(([label, value, delta]) => `
+        <div class="metric"><span>${label}</span><strong>${value}</strong><em>${delta === "" ? "&nbsp;" : `Delta ${delta}`}</em></div>
+      `).join("");
+    }
+
+    function table(headers, rows) {
+      return `
+        <table>
+          <thead><tr>${headers.map(header => `<th>${header}</th>`).join("")}</tr></thead>
+          <tbody>${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${headers.length}">No affected records</td></tr>`}</tbody>
+        </table>
+      `;
+    }
+
+    function renderTable(state, base) {
+      const panel = document.getElementById("tablePanel");
+      if (activeTab === "Impact") {
+        const current = summary(state, baselineState);
+        const baseSummary = summary(base);
+        panel.innerHTML = table(["Metric", "Baseline", "Scenario", "Delta"], [
+          ["Active nodes", baseSummary.nodes, current.nodes, current.nodes - baseSummary.nodes],
+          ["Active links", baseSummary.edges, current.edges, current.edges - baseSummary.edges],
+          ["Components", baseSummary.components, current.components, current.components - baseSummary.components],
+          ["Largest component", baseSummary.largestComponent, current.largestComponent, current.largestComponent - baseSummary.largestComponent],
+          ["Total capacity", formatNumber(baseSummary.totalCapacity), formatNumber(current.totalCapacity), formatNumber(current.totalCapacity - baseSummary.totalCapacity)],
+          ["Simulated flow", formatNumber(baseSummary.totalFlow), formatNumber(current.totalFlow), formatNumber(current.totalFlow - baseSummary.totalFlow)],
+          ["Population exposure", "0.00 m", `${formatNumber(current.lostPopulation, 2)} m`, `${formatNumber(current.lostPopulation, 2)} m`],
+          ["GDP exposure", "0.0 bn", `${formatNumber(current.lostGdp, 1)} bn`, `${formatNumber(current.lostGdp, 1)} bn`]
+        ]);
+      }
+      if (activeTab === "Bottlenecks") {
+        panel.innerHTML = table(["Link", "Mode", "Corridor", "Capacity", "Flow", "Utilization", "Risk"], bottlenecks(state).slice(0, 18).map(row => [
+          row.edge, row.mode, row.corridor, formatNumber(row.capacity), formatNumber(row.flow, 1), `${Math.round(row.utilization * 100)}%`, row.risk
+        ]));
+      }
+      if (activeTab === "Strategic hubs") {
+        panel.innerHTML = table(["Hub", "Country", "Degree", "Closeness", "Betweenness", "Score"], centrality(state).slice(0, 18).map(row => [
+          row.name, row.country, row.degree.toFixed(3), row.closeness.toFixed(3), row.betweenness.toFixed(3), row.strategic.toFixed(3)
+        ]));
+      }
+      if (activeTab === "Accessibility") {
+        const origin = document.getElementById("origin").value;
+        panel.innerHTML = table(["Hub", "Country", "Baseline h", "Scenario h", "Delta h", "Status", "GDP bn"], accessibility(state, base, origin).map(row => [
+          row.name, row.country, row.baseline === null ? "-" : row.baseline.toFixed(2), row.scenario === null ? "-" : row.scenario.toFixed(2), row.delta === null ? "-" : row.delta.toFixed(2), row.status, row.gdp
+        ]));
+      }
+      if (activeTab === "Data") {
+        panel.innerHTML = table(["Type", "Count", "Current focus"], [
+          ["Nodes", nodes.length, "Germany plus neighboring TEN-T hubs"],
+          ["Links", edges.length, "Rail, road, inland waterway, maritime"],
+          ["Presets", scenarios.length, "Baseline, disruptions, growth, capacity pressure"]
+        ]);
+      }
+    }
+
+    function renderTabs() {
+      document.getElementById("tabs").innerHTML = tabs.map(tab => `<button class="tab ${tab === activeTab ? "active" : ""}" data-tab="${tab}" type="button">${tab}</button>`).join("");
+      document.querySelectorAll(".tab").forEach(button => {
+        button.addEventListener("click", () => {
+          activeTab = button.dataset.tab;
+          render();
+        });
+      });
+    }
+
+    function render() {
+      document.getElementById("nodeCapacityOut").textContent = `${document.getElementById("nodeCapacity").value}%`;
+      document.getElementById("demandOut").textContent = `${document.getElementById("demand").value}%`;
+      const state = currentState();
+      const currentSummary = summary(state, baselineState);
+      const baseSummary = summary(baselineState);
+      renderMetrics(currentSummary, baseSummary);
+      drawMap(state);
+      renderTabs();
+      renderTable(state, baselineState);
+      const preset = scenarios.find(item => item.id === document.getElementById("preset").value);
+      document.getElementById("statusText").textContent = `${preset.name}: ${currentSummary.nodes} nodes, ${currentSummary.edges} links, ${currentSummary.overloadedEdges} overloaded`;
+    }
+
+    function option(value, label) {
+      return `<option value="${value}">${label}</option>`;
+    }
+
+    function resetManualControls() {
+      clearCheckboxGroup("deactivateNode", "deactivateNodeCount");
+      document.getElementById("reduceNode").value = "none";
+      clearCheckboxGroup("deactivateEdge", "deactivateEdgeCount");
+      document.getElementById("nodeCapacity").value = "55";
+      document.getElementById("demand").value = "100";
+    }
+
+    function resetOfficialLayers() {
+      document.querySelectorAll('input[name="officialLayer"]').forEach(input => {
+        input.checked = officialDefaultLayerValues.has(input.value);
+      });
+      updateOfficialLayerStatus();
+    }
+
+    function resetSimulationLayers() {
+      document.querySelectorAll('input[name="simulationLayer"]').forEach(input => {
+        input.checked = true;
+      });
+    }
+
+    function initControls() {
+      document.getElementById("preset").innerHTML = scenarios.map(item => option(item.id, item.name)).join("");
+      const nodeOptions = option("none", "None") + nodes.map(node => option(node.id, `${node.name} (${node.id})`)).join("");
+      renderCheckboxGroup(
+        "deactivateNodeList",
+        "deactivateNode",
+        nodes.map(node => ({ value: node.id, label: `${node.name} (${node.id})` })),
+        "deactivateNodeCount"
+      );
+      document.getElementById("reduceNode").innerHTML = nodeOptions;
+      document.getElementById("origin").innerHTML = nodes.map(node => option(node.id, `${node.name} (${node.id})`)).join("");
+      document.getElementById("origin").value = "frankfurt";
+      renderCheckboxGroup(
+        "deactivateEdgeList",
+        "deactivateEdge",
+        edges.map(edge => ({ value: edge.id, label: `${nodeById[edge.source].name} -> ${nodeById[edge.target].name} (${edge.mode})` })),
+        "deactivateEdgeCount"
+      );
+
+      ["preset", "reduceNode", "nodeCapacity", "demand", "origin"].forEach(id => {
+        document.getElementById(id).addEventListener("input", render);
+      });
+
+      document.querySelectorAll('input[name="officialLayer"]').forEach(input => {
+        input.addEventListener("input", updateOfficialOverlay);
+      });
+      document.querySelectorAll('input[name="simulationLayer"]').forEach(input => {
+        input.addEventListener("input", render);
+      });
+
+      document.getElementById("resetButton").addEventListener("click", () => {
+        resetManualControls();
+        render();
+      });
+
+      document.getElementById("clearMapButton").addEventListener("click", () => {
+        resetOfficialLayers();
+        resetSimulationLayers();
+        resetManualControls();
+        render();
+      });
+
+      document.getElementById("zoomIn").addEventListener("click", () => zoomMap(0.8));
+      document.getElementById("zoomOut").addEventListener("click", () => zoomMap(1.25));
+      document.getElementById("zoomReset").addEventListener("click", resetMapView);
+
+      const svg = document.getElementById("map");
+      svg.addEventListener("wheel", event => {
+        event.preventDefault();
+        zoomMap(event.deltaY < 0 ? 0.85 : 1.18, screenToMapPoint(event));
+      }, { passive: false });
+      svg.addEventListener("pointerdown", event => {
+        svg.setPointerCapture(event.pointerId);
+        svg.classList.add("dragging");
+        dragState = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY };
+      });
+      svg.addEventListener("pointermove", event => {
+        if (!dragState || dragState.id !== event.pointerId) return;
+        if (Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY) > 4) suppressNodeClick = true;
+        const rect = svg.getBoundingClientRect();
+        const dx = ((event.clientX - dragState.x) / rect.width) * mapView.width;
+        const dy = ((event.clientY - dragState.y) / rect.height) * mapView.height;
+        mapView.x -= dx;
+        mapView.y -= dy;
+        dragState = { ...dragState, x: event.clientX, y: event.clientY };
+        applyMapView();
+      });
+      ["pointerup", "pointercancel", "pointerleave"].forEach(type => {
+        svg.addEventListener(type, event => {
+          if (dragState?.id === event.pointerId) dragState = null;
+          svg.classList.remove("dragging");
+          setTimeout(() => { suppressNodeClick = false; }, 0);
+        });
+      });
+    }
+
+    initControls();
+    render();
+  </script>
+</body>
+</html>

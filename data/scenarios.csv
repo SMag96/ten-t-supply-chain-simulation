@@ -1,0 +1,7 @@
+scenario_id,name,description,target_type,target_id,capacity_multiplier,demand_multiplier,blocked
+baseline,Baseline,Normal network with all nodes and links available,none,,1.00,1.00,false
+duisburg_out,Duisburg shutdown,Deactivate the Duisburg inland port hub,node,duisburg,0.00,1.00,true
+hamburg_reduced,Hamburg port congestion,Reduce Hamburg handling capacity and connected link throughput,node,hamburg,0.45,1.05,false
+rhine_disruption,Rhine corridor disruption,Deactivate the Duisburg-Rotterdam inland waterway connection,edge,duisburg--rotterdam,0.00,1.00,true
+eastern_growth,Eastern demand growth,Increase demand for Leipzig-Dresden-Prague-Wroclaw-Poznan region,region,east_growth,1.00,1.25,false
+alpine_pressure,Alpine link capacity pressure,Reduce Basel-Zurich and Munich-Zurich capacity,region,alpine,0.55,1.00,false

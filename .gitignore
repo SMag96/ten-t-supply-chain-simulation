@@ -1,0 +1,39 @@
+# Python environments, caches and build products
+.venv/
+.venv-*/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+wheels/
+*.whl
+.ipynb_checkpoints/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+.streamlit/config.toml
+.vscode/
+.idea/
+*.pem
+*.key
+
+# Generated local output
+*.log
+*.tmp
+tmp/
+.DS_Store
+Thumbs.db
+# Legacy screenshots are stale/loading-only; retain locally, exclude publication.
+/app/screenshot.png
+/app/streamlit_screenshot.png
